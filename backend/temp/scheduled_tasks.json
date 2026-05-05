@@ -1,0 +1,20 @@
+{
+  "tasks": [
+    {
+      "id": "c76bc952",
+      "name": "Task c76bc952",
+      "schedule_type": "once",
+      "action": "",
+      "params": {},
+      "interval_seconds": 60,
+      "at_time": "",
+      "weekdays": [],
+      "enabled": true,
+      "last_run": null,
+      "next_run": "",
+      "run_count": 0,
+      "last_result": null,
+      "created_at": "2025-12-07T23:08:18.900965"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+    "name": "auto_summariser",
+    "description": "Automatically summarize screen content or clipboard text",
+    "version": "1.0.0",
+    "author": "JARVIS",
+    "entry": "main.py",
+    "commands": [
+        "summarize",
+        "summarize_screen",
+        "summarize_clipboard"
+    ],
+    "dependencies": []
+}

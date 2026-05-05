@@ -1,0 +1,18 @@
+{
+    "type": "object",
+    "properties": {
+        "plugin_name": {
+            "type": "string"
+        },
+        "command": {
+            "type": "string"
+        },
+        "params": {
+            "type": "object"
+        }
+    },
+    "required": [
+        "plugin_name",
+        "command"
+    ]
+}

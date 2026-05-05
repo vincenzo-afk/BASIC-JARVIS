@@ -1,0 +1,22 @@
+{
+    "type": "object",
+    "properties": {
+        "region": {
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "integer"
+                },
+                "y": {
+                    "type": "integer"
+                },
+                "width": {
+                    "type": "integer"
+                },
+                "height": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

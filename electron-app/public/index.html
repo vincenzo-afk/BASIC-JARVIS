@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="JARVIS - Local AI Desktop Assistant powered by Ollama" />
+  <title>JARVIS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #0a0a0a 0%, #111111 100%);
+      overflow: hidden;
+      min-height: 100vh;
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #0a0a0a 0%, #111111 100%);
+      color: #22d3ee;
+      font-size: 18px;
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-logo {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #22d3ee, #67e8f9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(34, 211, 238, 0.2);
+      border-top-color: #22d3ee;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-top: 20px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loading-screen">
+    <div class="loading-logo">JARVIS</div>
+    <div>Initializing...</div>
+    <div class="loading-spinner"></div>
+  </div>
+  <div id="root"></div>
+  <script>
+    // Hide loading screen when React mounts
+    window.addEventListener('DOMContentLoaded', function () {
+      // Give React time to mount
+      setTimeout(function () {
+        var loader = document.getElementById('loading-screen');
+        if (loader && document.getElementById('root').children.length > 0) {
+          loader.classList.add('hidden');
+          setTimeout(function () { loader.remove(); }, 300);
+        }
+      }, 500);
+    });
+
+    // Fallback: hide after 3 seconds regardless
+    setTimeout(function () {
+      var loader = document.getElementById('loading-screen');
+      if (loader) {
+        loader.classList.add('hidden');
+        setTimeout(function () { loader.remove(); }, 300);
+      }
+    }, 3000);
+  </script>
+</body>
+
+</html>

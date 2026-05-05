@@ -1,0 +1,62 @@
+{
+    "type": "object",
+    "oneOf": [
+        {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "const": "mouse_click"
+                },
+                "x": {
+                    "type": "integer"
+                },
+                "y": {
+                    "type": "integer"
+                },
+                "button": {
+                    "type": "string",
+                    "enum": [
+                        "left",
+                        "right",
+                        "middle"
+                    ]
+                }
+            },
+            "required": [
+                "action",
+                "x",
+                "y"
+            ]
+        },
+        {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "const": "key_type"
+                },
+                "text": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "action",
+                "text"
+            ]
+        },
+        {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "const": "open_app"
+                },
+                "app_name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "action",
+                "app_name"
+            ]
+        }
+    ]
+}
