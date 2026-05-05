@@ -1,0 +1,15 @@
+{
+    "name": "auto_debugger",
+    "description": "Automated code debugging and error analysis using LLM",
+    "version": "1.0.0",
+    "author": "JARVIS Team",
+    "entry": "main.py",
+    "commands": [
+        "analyze",
+        "fix",
+        "explain",
+        "trace",
+        "suggest"
+    ],
+    "dependencies": []
+}

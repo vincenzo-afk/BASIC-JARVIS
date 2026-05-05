@@ -1,0 +1,20 @@
+{
+    "name": "system_stats",
+    "description": "Monitor system resources including CPU, memory, disk, network, and running processes",
+    "version": "1.0.0",
+    "author": "JARVIS",
+    "entry": "main.py",
+    "commands": [
+        "stats",
+        "monitor",
+        "processes",
+        "cpu",
+        "memory",
+        "disk",
+        "network",
+        "battery"
+    ],
+    "dependencies": [
+        "psutil"
+    ]
+}

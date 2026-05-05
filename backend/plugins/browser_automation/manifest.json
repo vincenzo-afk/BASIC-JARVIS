@@ -1,0 +1,21 @@
+{
+    "name": "browser_automation",
+    "version": "1.0.0",
+    "description": "Web browser automation using Playwright",
+    "author": "JARVIS",
+    "commands": [
+        "open",
+        "screenshot",
+        "get_text",
+        "get_links",
+        "click",
+        "type",
+        "scroll",
+        "search",
+        "fill_form",
+        "close"
+    ],
+    "dependencies": [
+        "playwright"
+    ]
+}

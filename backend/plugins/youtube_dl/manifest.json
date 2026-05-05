@@ -1,0 +1,15 @@
+{
+    "name": "youtube_dl",
+    "description": "Download YouTube videos and audio",
+    "version": "1.0.0",
+    "author": "JARVIS",
+    "entry": "main.py",
+    "commands": [
+        "download",
+        "audio",
+        "info"
+    ],
+    "dependencies": [
+        "yt-dlp"
+    ]
+}

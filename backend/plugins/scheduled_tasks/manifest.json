@@ -1,0 +1,17 @@
+{
+    "name": "scheduled_tasks",
+    "version": "1.0.0",
+    "description": "Schedule and manage recurring tasks",
+    "author": "JARVIS",
+    "commands": [
+        "list",
+        "add",
+        "remove",
+        "update",
+        "enable",
+        "disable",
+        "run_now",
+        "status"
+    ],
+    "dependencies": []
+}

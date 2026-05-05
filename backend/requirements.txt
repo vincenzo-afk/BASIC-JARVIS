@@ -1,0 +1,47 @@
+# Core
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+pydantic==2.5.2
+
+# HTTP & WebSocket
+requests==2.31.0
+httpx==0.25.2
+websockets==12.0
+
+# Performance
+orjson==3.9.10
+uvloop==0.19.0; sys_platform != 'win32'
+
+# AI/LLM
+ollama==0.1.3
+
+# Screen Capture & OCR
+mss==9.0.1
+pytesseract==0.3.10
+opencv-python==4.8.1.78
+Pillow==10.1.0
+
+# System Control
+pyautogui==0.9.54
+psutil==5.9.7
+
+# Audio (Voice)
+pyaudio==0.2.14
+numpy==1.26.2
+soundfile==0.12.1
+scipy==1.11.4
+
+# Optional: Whisper STT (choose one)
+openai-whisper==20231117  # Slower, more accurate
+# faster-whisper==0.10.0    # Faster, recommended
+
+# Browser Automation (optional, requires: playwright install chromium)
+playwright==1.40.0
+
+# Utilities
+python-dotenv==1.0.0
+
+# Windows Specific
+pywin32==306; sys_platform == 'win32'
+

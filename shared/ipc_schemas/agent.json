@@ -1,0 +1,48 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "steps": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "action": {
+                        "type": "string"
+                    },
+                    "params": {
+                        "type": "object"
+                    },
+                    "condition": {
+                        "type": "string"
+                    },
+                    "on_success": {
+                        "type": "string"
+                    },
+                    "on_failure": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name",
+                    "action"
+                ]
+            }
+        },
+        "variables": {
+            "type": "object"
+        }
+    },
+    "required": [
+        "name",
+        "steps"
+    ]
+}
