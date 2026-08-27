@@ -27,7 +27,7 @@ On Windows, use `scripts\\install_all.bat`, `scripts\\run_backend.bat`, and `scr
 
 ## Branches and commits
 
-Create a focused branch from `master` using one of these prefixes:
+Create a focused branch from `main` using one of these prefixes:
 
 | Change | Branch prefix |
 |---|---|

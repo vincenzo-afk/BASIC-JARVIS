@@ -6,7 +6,7 @@ BASIC-JARVIS runs a local FastAPI service that can interact with Ollama, screens
 
 ## Supported code
 
-Security fixes are evaluated against the latest commit on the default `master` branch. Older revisions may not receive fixes independently.
+Security fixes are evaluated against the latest commit on the default `main` branch. Older revisions may not receive fixes independently.
 
 ## Reporting a vulnerability
 

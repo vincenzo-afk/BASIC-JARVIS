@@ -314,7 +314,7 @@ python test_features.py
 python scripts/test_api.py
 ```
 
-Continuous integration runs Python compilation checks and the Electron production build on pushes and pull requests targeting `master`.
+Continuous integration runs Python compilation checks and the Electron production build on pushes and pull requests targeting `main`.
 
 To validate or re-render the editable showcase locally:
 
