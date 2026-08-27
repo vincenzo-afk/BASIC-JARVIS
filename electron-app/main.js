@@ -50,8 +50,10 @@ function createWindow() {
     }
   });
 
-  // Load the app
-  const startUrl = `file://${path.join(__dirname, 'build', 'index.html')}`;
+  // Load the development server during local development and the built bundle otherwise.
+  const startUrl = isDev
+    ? 'http://localhost:3000'
+    : `file://${path.join(__dirname, 'build', 'index.html')}`;
   console.log(`Loading: ${startUrl}`);
   mainWindow.loadURL(startUrl);
 

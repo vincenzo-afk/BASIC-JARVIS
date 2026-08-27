@@ -17,3 +17,17 @@ build/
 *.dll
 *.so
 *.dylib
+
+# Python tooling and backend runtime output
+.pytest_cache/
+.mypy_cache/
+backend/logs/
+
+# Local model and media artifacts
+*.onnx
+*.pt
+*.pth
+*.wav
+*.mp3
+*.m4a
+*.webm

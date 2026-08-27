@@ -1,367 +1,74 @@
-# Contributing to JARVIS
+# Contributing to BASIC-JARVIS
 
-Thank you for your interest in contributing to JARVIS! This document provides guidelines and instructions for contributing.
+Thank you for helping improve BASIC-JARVIS. Contributions should preserve the project’s local-first design, document user-facing behavior, and include the safest practical validation for the affected area.
 
----
+## Development prerequisites
 
-## 📋 Table of Contents
+Install Python 3.8+, Node.js 16+, Git, and Ollama. Screen, voice, and desktop-control changes may also require Tesseract OCR, Piper, audio drivers, and platform-specific permissions.
 
-- [Code of Conduct](#code-of-conduct)
-- [Getting Started](#getting-started)
-- [Development Setup](#development-setup)
-- [Making Changes](#making-changes)
-- [Pull Request Process](#pull-request-process)
-- [Coding Standards](#coding-standards)
-- [Testing](#testing)
-- [Documentation](#documentation)
-
----
-
-## 📜 Code of Conduct
-
-This project follows a Code of Conduct. By participating, you are expected to uphold this code:
-
-- Be respectful and inclusive
-- Welcome newcomers
-- Focus on constructive feedback
-- Maintain a harassment-free environment
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Python 3.8+
-- Node.js 16+
-- Git
-- Ollama (for testing LLM features)
-
-### Fork and Clone
-
-1. Fork the repository on GitHub
-2. Clone your fork:
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/jarvis.git
-   cd jarvis
-   ```
-3. Add upstream remote:
-   ```bash
-   git remote add upstream https://github.com/ORIGINAL-OWNER/jarvis.git
-   ```
-
----
-
-## 💻 Development Setup
-
-### Backend
+## Local setup
 
 ```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
-pip install -r requirements.txt
-pip install -r requirements-dev.txt  # Development dependencies
+git clone https://github.com/vincenzo-afk/BASIC-JARVIS.git
+cd BASIC-JARVIS
+chmod +x scripts/*.sh
+./scripts/install_all.sh
+cp backend/.env.example backend/.env
 ```
 
-### Frontend
+Start the backend and Electron shell in separate terminals:
 
 ```bash
+./scripts/run_backend.sh
+./scripts/start_electron.sh
+```
+
+On Windows, use `scripts\\install_all.bat`, `scripts\\run_backend.bat`, and `scripts\\start_electron.bat`.
+
+## Branches and commits
+
+Create a focused branch from `master` using one of these prefixes:
+
+| Change | Branch prefix |
+|---|---|
+| New behavior | `feature/` |
+| Bug fix | `fix/` |
+| Documentation | `docs/` |
+| Refactor | `refactor/` |
+| Tests or maintenance | `test/` or `chore/` |
+
+Use concise [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) such as `feat(voice): add language detection` or `fix(electron): load the development server`.
+
+## Validation
+
+Run the checks relevant to your change before opening a pull request:
+
+```bash
+python -m compileall -q backend scripts test_features.py
 cd electron-app
-npm install
+npm ci
+npm run build
 ```
 
-### Running in Development
-
-**Terminal 1 (Backend):**
-```bash
-cd backend
-python main.py
-```
-
-**Terminal 2 (Frontend):**
-```bash
-cd electron-app
-npm run dev
-```
-
----
-
-## ✏️ Making Changes
-
-### Branch Naming
-
-Use descriptive branch names:
-
-| Type | Format | Example |
-|------|--------|---------|
-| Feature | `feature/description` | `feature/voice-activation` |
-| Bug Fix | `fix/description` | `fix/ocr-crash` |
-| Docs | `docs/description` | `docs/api-reference` |
-| Refactor | `refactor/description` | `refactor/plugin-loader` |
-
-### Creating a Branch
+The integration scripts require a running backend and may also require Ollama or native desktop capabilities:
 
 ```bash
-git checkout -b feature/my-awesome-feature
+python test_features.py
+python scripts/test_api.py
 ```
 
-### Commit Messages
+If a check cannot run in your environment, explain why in the pull request rather than silently omitting it.
 
-Follow conventional commits:
+## Pull requests
 
-```
-type(scope): brief description
+Pull requests should explain the problem, summarize the implementation, identify security or privacy implications, and list the commands that were run. Include screenshots or recordings for visible Electron changes. Keep unrelated formatting or dependency changes out of focused pull requests.
 
-Longer description if needed.
+The repository uses GitHub Actions for Python compilation and the Electron production build. A pull request should leave those checks passing.
 
-Fixes #123
-```
+## Security-sensitive changes
 
-**Types:**
-- `feat` - New feature
-- `fix` - Bug fix
-- `docs` - Documentation
-- `style` - Formatting
-- `refactor` - Code restructure
-- `test` - Tests
-- `chore` - Maintenance
+Changes involving screen capture, microphone input, system control, plugin execution, file access, or network exposure require additional care. Do not add credentials or private user data to the repository. Report suspected vulnerabilities privately using the process in [`SECURITY.md`](SECURITY.md) instead of opening a public issue.
 
-**Examples:**
-```
-feat(plugins): add browser automation plugin
-fix(ocr): handle empty screenshot gracefully
-docs(readme): add troubleshooting section
-```
+## Questions
 
----
-
-## 🔀 Pull Request Process
-
-### Before Submitting
-
-1. ✅ Update your branch with latest upstream
-   ```bash
-   git fetch upstream
-   git rebase upstream/main
-   ```
-
-2. ✅ Run tests
-   ```bash
-   # Backend
-   cd backend && pytest
-   
-   # Frontend
-   cd electron-app && npm test
-   ```
-
-3. ✅ Check code style
-   ```bash
-   # Backend
-   black . && isort .
-   
-   # Frontend
-   npm run lint
-   ```
-
-4. ✅ Update documentation if needed
-
-### Submitting
-
-1. Push your branch:
-   ```bash
-   git push origin feature/my-awesome-feature
-   ```
-
-2. Open a Pull Request on GitHub
-
-3. Fill in the PR template:
-   - Description of changes
-   - Related issues
-   - Testing done
-   - Screenshots (if UI changes)
-
-### Review Process
-
-- Maintainers will review your PR
-- Address any requested changes
-- Once approved, your PR will be merged
-
----
-
-## 📐 Coding Standards
-
-### Python (Backend)
-
-- Follow PEP 8
-- Use type hints
-- Write docstrings (Google style)
-- Max line length: 100 characters
-
-```python
-def my_function(param1: str, param2: int = 0) -> dict:
-    """
-    Brief description.
-    
-    Args:
-        param1: Description of param1
-        param2: Description of param2
-        
-    Returns:
-        Description of return value
-    """
-    return {"result": param1}
-```
-
-### JavaScript/React (Frontend)
-
-- Use ES6+ features
-- Functional components with hooks
-- PropTypes or TypeScript
-- Meaningful variable names
-
-```javascript
-const MyComponent = ({ title, onAction }) => {
-  const [state, setState] = useState(null);
-  
-  const handleClick = useCallback(() => {
-    onAction?.(state);
-  }, [state, onAction]);
-  
-  return (
-    <div className="my-component">
-      <h1>{title}</h1>
-      <button onClick={handleClick}>Action</button>
-    </div>
-  );
-};
-```
-
-### CSS
-
-- Use CSS custom properties
-- BEM-like naming
-- Mobile-first approach
-
-```css
-.component {
-  --component-color: var(--color-primary);
-}
-
-.component-header {
-  color: var(--component-color);
-}
-
-.component-header--active {
-  font-weight: bold;
-}
-```
-
----
-
-## 🧪 Testing
-
-### Backend Tests
-
-```bash
-cd backend
-pytest tests/ -v
-pytest tests/ --cov=modules  # With coverage
-```
-
-### Frontend Tests
-
-```bash
-cd electron-app
-npm test
-npm run test:coverage
-```
-
-### Writing Tests
-
-**Python:**
-```python
-import pytest
-from modules.llm.ollama_client import OllamaClient
-
-def test_ollama_client_init():
-    client = OllamaClient()
-    assert client.host == "http://localhost:11434"
-
-@pytest.fixture
-def mock_client():
-    return OllamaClient(host="http://mock:11434")
-```
-
-**JavaScript:**
-```javascript
-import { render, screen } from '@testing-library/react';
-import CommandBar from './CommandBar';
-
-test('renders input field', () => {
-  render(<CommandBar />);
-  expect(screen.getByPlaceholderText(/ask jarvis/i)).toBeInTheDocument();
-});
-```
-
----
-
-## 📚 Documentation
-
-### What to Document
-
-- New features
-- API endpoints
-- Configuration options
-- Plugin development
-
-### Where to Document
-
-| Content | Location |
-|---------|----------|
-| General usage | `README.md` |
-| API reference | `backend/README.md` |
-| UI components | `electron-app/README.md` |
-| Plugin development | `backend/plugins/README.md` |
-| Changes | `CHANGELOG.md` |
-
-### Documentation Style
-
-- Use clear, concise language
-- Include code examples
-- Add screenshots for UI features
-- Keep documentation up-to-date
-
----
-
-## 🎯 Areas to Contribute
-
-### Good First Issues
-
-Look for issues labeled `good first issue`:
-- Documentation improvements
-- Bug fixes
-- Test coverage
-- Code comments
-
-### Feature Ideas
-
-- Voice activation ("Hey JARVIS")
-- Browser automation plugin
-- Scheduled tasks
-- Multi-language support
-- Custom themes
-
----
-
-## ❓ Questions?
-
-- Open an issue for bugs or features
-- Start a discussion for questions
-- Check existing issues/discussions first
-
----
-
-## 🙏 Thank You!
-
-Your contributions make JARVIS better for everyone. Thank you for being part of the community!
+For normal bugs and feature requests, use the repository’s issue templates. For security concerns, use the private reporting path in [`SECURITY.md`](SECURITY.md).

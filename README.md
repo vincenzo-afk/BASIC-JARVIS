@@ -1,400 +1,343 @@
-# JARVIS - Local AI Desktop Assistant
+# BASIC-JARVIS
 
-<div align="center">
+> A local-first desktop AI assistant that combines an Electron interface, a FastAPI backend, and Ollama-powered language models.
 
-![JARVIS Logo](electron-app/public/icon.png)
+[![CI](https://github.com/vincenzo-afk/BASIC-JARVIS/actions/workflows/ci.yml/badge.svg)](https://github.com/vincenzo-afk/BASIC-JARVIS/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB.svg)](https://www.python.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-16%2B-339933.svg)](https://nodejs.org/)
+[![Electron](https://img.shields.io/badge/Electron-39-47848F.svg)](https://www.electronjs.org/)
 
-**A complete, offline AI-powered desktop assistant using Ollama + Electron + Python**
+[Report a bug](https://github.com/vincenzo-afk/BASIC-JARVIS/issues/new?template=bug_report.md) · [Request a feature](https://github.com/vincenzo-afk/BASIC-JARVIS/issues/new?template=feature_request.md) · [View the API docs](http://localhost:8000/docs)
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-16+-green.svg)](https://nodejs.org/)
-[![Electron](https://img.shields.io/badge/Electron-28+-purple.svg)](https://www.electronjs.org/)
-[![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-cyan.svg)](https://ollama.ai/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+## Table of Contents
 
-</div>
+- [About the Project](#about-the-project)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [API Reference](#api-reference)
+- [Project Structure](#project-structure)
+- [Features and Roadmap](#features-and-roadmap)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [Security](#security)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
 
----
+## About the Project
 
-## 🎯 Overview
+BASIC-JARVIS is a local AI desktop assistant for Windows, Linux, and macOS development environments. The Electron desktop shell provides the user interface and system tray integration, while a local FastAPI service exposes chat, screen capture/OCR, voice, system-control, agent, and plugin routes. Ollama supplies the local large language model (LLM) runtime, so core chat requests can be handled without a hosted AI API key.
 
-JARVIS is a fully local, privacy-focused AI desktop assistant that brings the power of large language models directly to your PC. No cloud dependencies, no API keys required for core functionality.
+The project is intended for local experimentation and development. Features that read the screen, control input devices, open applications, manage audio, or execute plugins should be enabled only on a machine and account where those actions are expected.
 
-### Key Features
+### Key capabilities
 
-| Feature | Description |
-|---------|-------------|
-| 🧠 **Local LLM Chat** | Chat with AI models via Ollama (llama3, qwen, mistral, etc.) |
-| 📸 **Screen Reader** | OCR-powered screen capture and text extraction |
-| 🎮 **System Control** | Automate keyboard, mouse, and application control |
-| 🎤 **Voice I/O** | Speech-to-text (Whisper) and text-to-speech (Piper) |
-| 🤖 **Agent System** | Multi-step workflow automation with conditional logic |
-| 🧩 **Plugin System** | Extend functionality with custom Python plugins |
-| 🔒 **100% Local** | All processing happens on your machine |
+- **Local LLM chat:** Send prompts to models available through Ollama, including streaming and multi-turn conversation routes.
+- **Desktop shell:** Run the React interface inside Electron with a tray menu, hidden-to-tray behavior, and global shortcuts.
+- **Screen tools:** Capture monitors and pass screenshots through the OCR pipeline when the required native tools are installed.
+- **Voice tools:** Transcribe audio and synthesize speech through the configured Whisper and Piper components.
+- **System control:** Expose guarded mouse, keyboard, application, and power-management routes through the backend.
+- **Agent workflows:** Execute multi-step tasks using the backend action catalog.
+- **Plugins:** Discover, load, reload, unload, and execute Python plugins from `backend/plugins/`.
 
----
+### Architecture
 
-## 📋 Prerequisites
+```mermaid
+flowchart LR
+    UI[Electron + React UI] -->|HTTP / WebSocket| API[FastAPI backend]
+    API --> LLM[Ollama local models]
+    API --> OCR[Screen capture + Tesseract OCR]
+    API --> VOICE[Whisper + Piper voice tools]
+    API --> CONTROL[Local system control]
+    API --> PLUGINS[Python plugin manager]
+    UI -->|IPC via preload| SHELL[Electron main process]
+```
 
-Before installing JARVIS, ensure you have the following:
+## Tech Stack
 
-### Required
+| Area | Technologies | Verified source |
+|---|---|---|
+| Desktop UI | Electron `^39.2.6`, React `^18.2.0`, React DOM `^18.2.0`, `react-scripts` `5.0.1` | `electron-app/package.json` |
+| Styling and build | Tailwind CSS `^3.3.6`, PostCSS `^8.4.32`, Autoprefixer `^10.4.16` | `electron-app/package.json` |
+| Backend API | FastAPI `0.104.1`, Uvicorn `0.24.0`, Pydantic `2.5.2` | `backend/requirements.txt` |
+| Local AI | Ollama Python client `0.1.3` and an Ollama server | `backend/requirements.txt`, `backend/config/settings.py` |
+| Screen and OCR | `mss`, `pytesseract`, OpenCV, Pillow | `backend/requirements.txt` |
+| Voice | OpenAI Whisper, PyAudio, SoundFile, Piper executable/model | `backend/requirements.txt`, `backend/config/settings.py` |
+| Automation | PyAutoGUI, psutil, Playwright | `backend/requirements.txt` |
+| Storage | Local filesystem for logs, temporary screenshots/audio, and plugin files | `backend/config/settings.py` |
 
-| Software | Version | Download |
-|----------|---------|----------|
-| **Python** | 3.8 or higher | [python.org](https://www.python.org/downloads/) |
-| **Node.js** | 16 or higher | [nodejs.org](https://nodejs.org/) |
-| **Ollama** | Latest | [ollama.ai](https://ollama.ai/) |
+## Getting Started
 
-### Optional (for full features)
+### Prerequisites
 
-| Software | Purpose | Download |
-|----------|---------|----------|
-| **Tesseract OCR** | Screen text extraction | [GitHub](https://github.com/tesseract-ocr/tesseract) |
-| **FFmpeg** | Audio processing | [ffmpeg.org](https://ffmpeg.org/) |
+Install the following before running BASIC-JARVIS:
 
----
+| Requirement | Purpose |
+|---|---|
+| Python 3.8 or newer | Runs the FastAPI backend and Python modules |
+| Node.js 16 or newer | Installs and builds the Electron/React application |
+| Ollama | Runs local language models |
+| Tesseract OCR | Required for screen text extraction |
+| Piper and a Piper voice model | Required for speech synthesis |
+| System audio support | Required for microphone input and speech features |
 
-## 🚀 Quick Start
+The repository includes Windows batch helpers and Unix shell helpers. Native audio, OCR, and automation dependencies may require additional operating-system packages.
 
-### 1. Clone or Download
+### Installation
+
+Clone the repository and run the platform-specific installer:
 
 ```bash
-git clone https://github.com/yourusername/jarvis.git
-cd jarvis
+git clone https://github.com/vincenzo-afk/BASIC-JARVIS.git
+cd BASIC-JARVIS
 ```
 
-### 2. Install Dependencies
+On Linux or macOS:
 
-**Windows:**
-```powershell
-.\scripts\install_all.bat
-```
-
-**Linux/macOS:**
 ```bash
 chmod +x scripts/*.sh
 ./scripts/install_all.sh
 ```
 
-### 3. Pull an Ollama Model
+On Windows, run `scripts\\install_all.bat` or the root-level `install_all.bat`. The installer installs `backend/requirements.txt` and the Electron dependencies.
+
+### Configuration
+
+Copy the example environment file and adjust paths for your machine:
 
 ```bash
-# Recommended models
-ollama pull llama3.1:8b          # General reasoning (4.7GB)
-ollama pull qwen2.5-coder:7b     # Coding tasks (4.4GB)
-ollama pull mistral:7b           # Fast responses (4.1GB)
+cp backend/.env.example backend/.env
 ```
 
-### 4. Start JARVIS
+The backend loads `.env` through `python-dotenv`. The supported variables are:
 
-**Terminal 1 - Backend:**
-```powershell
-.\scripts\run_backend.bat
+| Variable | Default | Description |
+|---|---|---|
+| `OLLAMA_HOST` | `http://localhost:11434` | Ollama server URL |
+| `DEFAULT_MODEL` | `llama3.1:8b` | Default Ollama model name |
+| `TESSERACT_CMD` | Auto-detected | Full path to the Tesseract executable |
+| `OCR_LANGUAGE` | `eng` | Tesseract language code |
+| `WHISPER_MODEL` | `base` | Whisper model name |
+| `PIPER_PATH` | `piper` | Piper executable or command path |
+| `PIPER_MODEL` | `bin/piper/en_US-lessac-medium.onnx` | Piper voice model path |
+| `API_HOST` | `127.0.0.1` | Backend bind address |
+| `API_PORT` | `8000` | Backend port |
+| `DEBUG_MODE` | `false` | Debug flag read by backend configuration |
+| `LOG_LEVEL` | `INFO` | Backend log level |
+| `ENABLE_OCR` | `true` | Enable screen/OCR functionality |
+| `ENABLE_VOICE` | `true` | Enable voice functionality |
+| `ENABLE_SYSTEM_CONTROL` | `true` | Enable input, application, and system-control routes |
+
+Never commit `.env` files, model files, generated audio, screenshots, or logs. The repository’s `.gitignore` excludes common local artifacts and environment files.
+
+### Start the application in development
+
+Start the backend in one terminal:
+
+```bash
+./scripts/run_backend.sh
 ```
 
-**Terminal 2 - Frontend:**
-```powershell
-.\scripts\start_electron.bat
+Start the Electron development shell in a second terminal:
+
+```bash
+./scripts/start_electron.sh
 ```
 
----
+On Windows, use `scripts\\run_backend.bat` and `scripts\\start_electron.bat`. The backend is available at `http://127.0.0.1:8000`; interactive OpenAPI documentation is available at `http://127.0.0.1:8000/docs`.
 
-## 🎮 Usage
+### Pull an Ollama model
 
-### Global Hotkey
+Make sure Ollama is running, then pull a model supported by your machine:
+
+```bash
+ollama pull llama3.1:8b
+```
+
+The model name can be overridden with `DEFAULT_MODEL` or supplied in an API request.
+
+## Usage
+
+### Electron shell
+
+The desktop shell loads the React production bundle from `electron-app/build/index.html`. The development command starts the React development server and launches Electron in development mode so that the shell loads `http://localhost:3000`.
+
+The implemented global shortcuts are:
 
 | Shortcut | Action |
-|----------|--------|
-| `Alt + Space` | Toggle JARVIS window |
-| `Ctrl + Shift + J` | Focus command input |
+|---|---|
+| `Alt+Space` | Show, focus, or hide the JARVIS window |
+| `Ctrl+Shift+J` on Windows/Linux, `Cmd+Shift+J` on macOS | Show the window and focus the input |
+| `F12` | Toggle Electron DevTools while the window is focused |
 
-### Command Bar
+The tray menu can show the window, open settings, or quit the application. Closing the window hides it rather than terminating the process on Windows and Linux.
 
-Type natural language commands in the command bar:
+### Backend health
 
-```
-"Summarize what's on my screen"
-"Open notepad and type 'Hello World'"
-"What time is it?"
-"Explain this code: [paste code]"
-```
-
-### Quick Actions
-
-| Button | Action |
-|--------|--------|
-| 📸 Read Screen | Capture screen and extract text via OCR |
-| 🎤 Voice Input | Toggle voice listening mode |
-| 🧩 Plugins | Open plugin management panel |
-| ⚙️ Settings | Configure models and options |
-
----
-
-## 📁 Project Structure
-
-```
-JARVIS/
-│
-├── electron-app/                 # Desktop UI (Electron + React)
-│   ├── electron.js              # Main Electron process
-│   ├── preload.js               # Secure IPC bridge
-│   ├── package.json             # Node dependencies
-│   ├── public/
-│   │   └── index.html           # HTML entry point
-│   └── src/
-│       ├── App.jsx              # Main React component
-│       ├── index.jsx            # React entry point
-│       ├── components/
-│       │   ├── CommandBar.jsx   # Chat input/output
-│       │   ├── Waveform.jsx     # Audio visualization
-│       │   ├── HistoryPanel.jsx # Activity history
-│       │   ├── Settings.jsx     # Configuration modal
-│       │   └── PluginPanel.jsx  # Plugin management
-│       └── styles/
-│           └── globals.css      # All styles
-│
-├── backend/                      # Python FastAPI backend
-│   ├── main.py                  # API entry point
-│   ├── requirements.txt         # Python dependencies
-│   ├── config/
-│   │   └── settings.py          # Configuration
-│   ├── routes/
-│   │   ├── chat.py              # LLM chat endpoints
-│   │   ├── screen.py            # OCR endpoints
-│   │   ├── control.py           # System control
-│   │   ├── voice.py             # STT/TTS endpoints
-│   │   ├── agent.py             # Workflow automation
-│   │   └── plugins.py           # Plugin management
-│   ├── modules/
-│   │   ├── llm/                 # Ollama integration
-│   │   ├── ocr/                 # Screen capture & OCR
-│   │   ├── control/             # Mouse, keyboard, system
-│   │   ├── voice/               # Whisper & Piper
-│   │   ├── agents/              # Workflow engine
-│   │   └── utils/               # Logging, file ops
-│   └── plugins/                 # Extension plugins
-│       ├── youtube_dl/          # Download videos
-│       ├── system_stats/        # System monitoring
-│       └── auto_summariser/     # Content summarization
-│
-├── shared/                       # Shared schemas
-│   └── ipc_schemas/             # JSON schemas
-│
-├── scripts/                      # Utility scripts
-│   ├── run_backend.bat/.sh      # Start backend
-│   ├── start_electron.bat/.sh   # Start frontend
-│   └── install_all.bat/.sh      # Install everything
-│
-└── README.md                     # This file
-```
-
----
-
-## 📡 API Reference
-
-Base URL: `http://localhost:8000/api`
-
-### Chat
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/chat/` | POST | Send message to LLM |
-| `/chat/conversation` | POST | Multi-turn conversation |
-| `/chat/models` | GET | List available models |
-
-**Example:**
 ```bash
-curl -X POST http://localhost:8000/api/chat/ \
-  -H "Content-Type: application/json" \
-  -d '{"model": "llama3.1:8b", "prompt": "Hello JARVIS!"}'
+curl http://127.0.0.1:8000/health
 ```
 
-### Screen
+The response reports backend status, Ollama connectivity, CPU information, and availability of chat, OCR, voice, agent, and plugin modules.
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/screen/read` | POST | Capture screen + OCR |
-| `/screen/capture` | POST | Screenshot only |
-| `/screen/monitors` | GET | List monitors |
+### Send a local chat request
 
-### Control
+```bash
+curl -X POST http://127.0.0.1:8000/api/chat/ \
+  -H 'Content-Type: application/json' \
+  -d '{"model":"llama3.1:8b","prompt":"Explain what BASIC-JARVIS does in one sentence."}'
+```
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/control/mouse/click` | POST | Mouse click |
-| `/control/mouse/move` | POST | Move mouse |
-| `/control/keyboard/type` | POST | Type text |
-| `/control/keyboard/hotkey` | POST | Press hotkey |
-| `/control/app/open` | POST | Open application |
-| `/control/system/info` | GET | System information |
+The chat endpoint returns a JSON object containing `response`, `model`, and optional token and duration fields. If Ollama is unavailable, the backend returns a service-unavailable error.
+
+## API Reference
+
+The FastAPI service is rooted at `http://127.0.0.1:8000`. OpenAPI documentation is served at `/docs` and `/redoc`.
+
+### Core and chat
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/` | Backend service summary |
+| `GET` | `/health` | Health and module availability |
+| `POST` | `/api/chat/` | Generate a response from an Ollama model |
+| `POST` | `/api/chat/conversation` | Generate a response from message history |
+| `GET` | `/api/chat/models` | List locally available Ollama models |
+| `GET` | `/api/chat/models/{model_name}` | Retrieve model information |
+| `POST` | `/api/chat/models/{model_name}/pull` | Pull a model through Ollama |
+| `POST` | `/api/chat/stream` | Stream a response as Server-Sent Events |
+| `WS` | `/api/chat/ws` | Exchange chat messages over WebSocket |
+
+The basic chat request accepts `model`, required `prompt`, optional `system`, optional `temperature` from `0.0` to `2.0`, and optional `max_tokens`.
+
+### Screen and OCR
+
+| Method | Path | Purpose |
+|---|---|---|
+| `POST` | `/api/screen/read` | Capture a monitor region and run OCR |
+| `POST` | `/api/screen/capture` | Capture a monitor image |
+| `GET` | `/api/screen/monitors` | List available monitors |
+| `POST` | `/api/screen/ocr` | Run OCR against an existing image path |
 
 ### Voice
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/voice/transcribe` | POST | Speech to text |
-| `/voice/speak` | POST | Text to speech |
-| `/voice/status` | GET | Voice module status |
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/api/voice/status` | Report speech component availability |
+| `POST` | `/api/voice/transcribe` | Transcribe uploaded audio |
+| `POST` | `/api/voice/transcribe-raw` | Transcribe raw uploaded audio |
+| `POST` | `/api/voice/speak` | Synthesize speech |
+| `POST` | `/api/voice/speak-async` | Start asynchronous speech synthesis |
+| `GET` | `/api/voice/speak/download/{filename}` | Download generated audio |
+| `GET` | `/api/voice/voices` | List available voices |
+| `POST` | `/api/voice/detect-language` | Detect language from uploaded audio |
+| `POST` | `/api/voice/voice-chat` | Combine transcription, agent processing, and optional speech |
+| `POST` | `/api/voice/speak-base64` | Return synthesized audio as Base64 data |
 
-### Plugins
+### System control, agents, and plugins
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/plugins/` | GET | List all plugins |
-| `/plugins/{name}` | GET | Plugin details |
-| `/plugins/{name}/run` | POST | Execute plugin command |
+| Area | Representative routes |
+|---|---|
+| System control | `/api/control/mouse/*`, `/api/control/keyboard/*`, `/api/control/app/*`, `/api/control/system/*` |
+| Agents | `/api/agent/run`, `/api/agent/workflow`, `/api/agent/status/{agent_id}`, `/api/agent/result/{agent_id}`, `/api/agent/actions` |
+| Plugins | `/api/plugins/`, `/api/plugins/{plugin_name}`, `/api/plugins/{plugin_name}/run`, `/api/plugins/{plugin_name}/load`, `/api/plugins/{plugin_name}/unload`, `/api/plugins/{plugin_name}/reload`, `/api/plugins/refresh` |
 
----
+System-control routes are controlled by `ENABLE_SYSTEM_CONTROL`. The API currently has no authentication layer; bind it to localhost unless you have deliberately added network controls around it.
 
-## 🧩 Plugins
+## Project Structure
 
-### Included Plugins
-
-| Plugin | Description | Commands |
-|--------|-------------|----------|
-| **youtube_dl** | Download YouTube videos/audio | `download`, `audio`, `info` |
-| **system_stats** | Monitor system resources | `stats`, `monitor`, `processes` |
-| **auto_summariser** | Summarize content | `summarize`, `summarize_screen`, `summarize_clipboard` |
-
-### Creating a Plugin
-
-1. Create folder: `backend/plugins/my_plugin/`
-
-2. Add `manifest.json`:
-```json
-{
-  "name": "my_plugin",
-  "description": "What this plugin does",
-  "version": "1.0.0",
-  "author": "Your Name",
-  "entry": "main.py",
-  "commands": ["command1", "command2"]
-}
+```text
+BASIC-JARVIS/
+├── backend/
+│   ├── config/              Runtime settings and environment loading
+│   ├── modules/             LLM, OCR, voice, control, agent, and utility modules
+│   ├── plugins/             Discoverable Python plugins
+│   ├── routes/              FastAPI routers
+│   ├── main.py              Backend application entry point
+│   └── requirements.txt     Pinned Python dependencies
+├── electron-app/
+│   ├── public/              Static assets, including the application icon
+│   ├── src/                 React renderer source
+│   ├── main.js              Electron main process
+│   ├── preload.js           Context-isolated IPC bridge
+│   └── package.json         Frontend and Electron scripts
+├── scripts/                 Installation, startup, and API test helpers
+├── shared/                  IPC schemas and shared TypeScript types
+├── .github/                 CI, issue templates, and contribution metadata
+├── test_features.py         Backend integration test runner
+└── README.md                Project documentation
 ```
 
-3. Add `main.py`:
-```python
-class Plugin:
-    def __init__(self):
-        self.name = "My Plugin"
-    
-    def run(self, command: str, params: dict):
-        if command == "command1":
-            return {"result": "success"}
-        return {"error": "Unknown command"}
+## Features and Roadmap
 
-plugin = Plugin()
+The current codebase contains the following implemented areas: local Ollama chat, streaming chat, screen capture and OCR, voice routes, agent workflows, plugin lifecycle management, tray integration, IPC window controls, and system-control routes.
+
+Known limitations include the absence of an authentication layer, the use of wildcard CORS settings in the backend configuration, platform-specific native dependencies, and no packaged release or deployment configuration in the repository. The project roadmap is maintained in [`CHANGELOG.md`](CHANGELOG.md) and through GitHub issues.
+
+## Testing
+
+The repository contains a backend integration test runner in `test_features.py` and an API-focused script in `scripts/test_api.py`. These tests expect a running backend and, for some cases, local services such as Ollama, OCR, audio, or desktop-control support.
+
+Run static Python validation with:
+
+```bash
+python -m compileall -q backend scripts test_features.py
 ```
 
----
+Build the Electron/React bundle with:
 
-## ⚙️ Configuration
-
-### Environment Variables
-
-Create a `.env` file in the `backend/` folder:
-
-```env
-# Ollama
-OLLAMA_HOST=http://localhost:11434
-DEFAULT_MODEL=llama3.1:8b
-
-# OCR
-TESSERACT_CMD=C:/Program Files/Tesseract-OCR/tesseract.exe
-OCR_LANGUAGE=eng
-
-# Voice
-WHISPER_MODEL=base
-PIPER_PATH=piper
-PIPER_MODEL=en_US-lessac-medium.onnx
-
-# API
-API_HOST=127.0.0.1
-API_PORT=8000
-DEBUG_MODE=false
-
-# Features
-ENABLE_OCR=true
-ENABLE_VOICE=true
-ENABLE_SYSTEM_CONTROL=true
+```bash
+cd electron-app
+npm ci
+npm run build
 ```
 
----
+Run the backend API test suite only after starting the backend:
 
-## 🔧 Troubleshooting
+```bash
+python test_features.py
+python scripts/test_api.py
+```
 
-### Common Issues
+Continuous integration runs Python compilation checks and the Electron production build on pushes and pull requests targeting `master`.
 
-| Issue | Solution |
-|-------|----------|
-| **"Cannot connect to Ollama"** | Ensure Ollama is running: `ollama serve` |
-| **"No models found"** | Pull a model: `ollama pull llama3.1:8b` |
-| **OCR not working** | Install Tesseract and set `TESSERACT_CMD` |
-| **Backend won't start** | Check Python dependencies: `pip install -r requirements.txt` |
-| **Electron won't start** | Check Node dependencies: `npm install` |
+## Deployment
 
-### Logs
+No Dockerfile, installer configuration, or hosted deployment manifest is present. The supported operating model is local execution on a desktop machine:
 
-- **Backend logs**: `backend/logs/jarvis.log`
-- **Electron logs**: DevTools console (Ctrl+Shift+I)
+1. Install the prerequisites and native tools.
+2. Install Python and Node.js dependencies with the repository scripts.
+3. Configure `backend/.env`.
+4. Start the backend and Electron shell using the platform scripts.
 
----
+Before exposing the backend beyond localhost, add authentication, restrict `ALLOWED_ORIGINS`, review the system-control routes, and place the service behind an appropriate network boundary.
 
-## 🎯 Roadmap
+## Contributing
 
-- [x] Electron + React UI
-- [x] FastAPI Backend
-- [x] Ollama Integration
-- [x] Screen Reader (OCR)
-- [x] System Control
-- [x] Plugin System
-- [x] Workflow Engine
-- [x] Voice Input (Whisper)
-- [x] Voice Output (Piper/SAPI)
-- [x] Advanced Agents
-- [x] Auto-Debugger Plugin
-- [x] Browser Automation
-- [x] Scheduled Tasks
-- [ ] Voice Activation ("Hey JARVIS")
-- [ ] Multi-language Support
-- [ ] Custom Themes
+Contributions are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for the verified development workflow, testing commands, branch naming conventions, and pull-request expectations. Use the provided issue templates for bug reports and feature requests.
 
----
+## Security
 
-## 🤝 Contributing
+BASIC-JARVIS can read screens, access audio devices, control input, open or terminate applications, and execute plugin code. Treat the backend as a local privileged service. Do not bind it publicly without adding authentication and tightening CORS and upload controls.
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Please report vulnerabilities privately by following [`SECURITY.md`](SECURITY.md). Do not include secrets, access tokens, private screenshots, or personal data in public issues.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+## License
 
----
+BASIC-JARVIS is distributed under the [MIT License](LICENSE). The repository preserves the copyright notice included in the license file.
 
-## 📄 License
+## Acknowledgments
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+BASIC-JARVIS is built with [Electron](https://www.electronjs.org/), [React](https://react.dev/), [FastAPI](https://fastapi.tiangolo.com/), [Uvicorn](https://www.uvicorn.org/), [Ollama](https://ollama.com/), [Tesseract OCR](https://github.com/tesseract-ocr/tesseract), [OpenAI Whisper](https://github.com/openai/whisper), and [Piper](https://github.com/rhasspy/piper).
 
----
+## References
 
-## 🙏 Acknowledgments
+[1]: https://fastapi.tiangolo.com/ "FastAPI documentation"
+[2]: https://www.electronjs.org/docs/latest/ "Electron documentation"
+[3]: https://docs.github.com/en/actions "GitHub Actions documentation"
 
-- [Ollama](https://ollama.ai/) - Local LLM runtime
-- [Electron](https://www.electronjs.org/) - Desktop app framework
-- [FastAPI](https://fastapi.tiangolo.com/) - Python API framework
-- [Tesseract](https://github.com/tesseract-ocr/tesseract) - OCR engine
-- [Whisper](https://github.com/openai/whisper) - Speech recognition
-- [Piper](https://github.com/rhasspy/piper) - Text-to-speech
+[Back to top](#basic-jarvis)
 
----
-
-<div align="center">
-
-**Built with ❤️ for local AI enthusiasts**
-
-[Report Bug](https://github.com/yourusername/jarvis/issues) · [Request Feature](https://github.com/yourusername/jarvis/issues)
-
-</div>
+Maintained by [vincenzo-afk](https://github.com/vincenzo-afk). Built for local AI experimentation.

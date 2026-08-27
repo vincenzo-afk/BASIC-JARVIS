@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the JARVIS project will be documented in this file.
+All notable changes to the BASIC-JARVIS project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -127,6 +127,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Replaced the stale root README with repository-specific installation, configuration, usage, API, testing, deployment, security, and contribution guidance.
+- Fixed Electron development startup so `npm run dev` loads the React development server instead of the production bundle.
+- Added a non-secret backend environment template, CI checks, issue templates, pull-request guidance, and security documentation.
+
 ### Planned
 - [x] ~~Full Whisper STT integration~~ ✅
 - [x] ~~Full Piper TTS integration~~ ✅
@@ -152,7 +157,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Contributing
 
-See [README.md](README.md#contributing) for contribution guidelines.
+See [README.md](README.md#contributing) and [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ## License
 
