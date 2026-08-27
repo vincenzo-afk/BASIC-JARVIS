@@ -37,12 +37,11 @@ The project is intended for local experimentation and development. Features that
 
 The repository includes an editable, silent 18-second HTML video that presents the local model loop, screen/OCR and voice surfaces, agent workflows, and plugin manager. The rendered MP4 is embedded below; the source composition and storyboard are available in [`videos/basic-jarvis-showcase/`](videos/basic-jarvis-showcase/).
 
-<video controls autoplay loop muted playsinline width="100%">
-  <source src="docs/assets/basic-jarvis-showcase.mp4" type="video/mp4">
-  <a href="docs/assets/basic-jarvis-showcase.mp4">Watch the BASIC-JARVIS showcase video</a>
+<video controls autoplay loop muted playsinline width="100%" src="https://raw.githubusercontent.com/vincenzo-afk/BASIC-JARVIS/main/docs/assets/basic-jarvis-showcase.mp4">
+  <a href="https://raw.githubusercontent.com/vincenzo-afk/BASIC-JARVIS/main/docs/assets/basic-jarvis-showcase.mp4">Watch the BASIC-JARVIS showcase video</a>
 </video>
 
-[Download or watch the MP4](docs/assets/basic-jarvis-showcase.mp4) · [Edit the HTML composition](videos/basic-jarvis-showcase/index.html) · [Read the storyboard](videos/basic-jarvis-showcase/STORYBOARD.md)
+[Download or watch the MP4](https://raw.githubusercontent.com/vincenzo-afk/BASIC-JARVIS/main/docs/assets/basic-jarvis-showcase.mp4) · [Edit the HTML composition](videos/basic-jarvis-showcase/index.html) · [Read the storyboard](videos/basic-jarvis-showcase/STORYBOARD.md)
 
 ### Key capabilities
 
