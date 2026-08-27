@@ -1,0 +1,25 @@
+{
+  "name": "basic-jarvis-showcase",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Editable HyperFrames showcase video for BASIC-JARVIS",
+  "scripts": {
+    "lint": "hyperframes lint --json",
+    "check": "hyperframes check --snapshots --json",
+    "render": "hyperframes render --quality high --output ../../docs/assets/basic-jarvis-showcase.mp4"
+  },
+  "keywords": [
+    "basic-jarvis",
+    "hyperframes",
+    "local-ai",
+    "electron",
+    "fastapi",
+    "ollama"
+  ],
+  "author": "vincenzo-afk",
+  "license": "MIT",
+  "devDependencies": {
+    "gsap": "^3.15.0",
+    "hyperframes": "^0.8.16"
+  }
+}

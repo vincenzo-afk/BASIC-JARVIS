@@ -13,6 +13,7 @@
 ## Table of Contents
 
 - [About the Project](#about-the-project)
+- [Project Showcase](#project-showcase)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
@@ -31,6 +32,17 @@
 BASIC-JARVIS is a local AI desktop assistant for Windows, Linux, and macOS development environments. The Electron desktop shell provides the user interface and system tray integration, while a local FastAPI service exposes chat, screen capture/OCR, voice, system-control, agent, and plugin routes. Ollama supplies the local large language model (LLM) runtime, so core chat requests can be handled without a hosted AI API key.
 
 The project is intended for local experimentation and development. Features that read the screen, control input devices, open applications, manage audio, or execute plugins should be enabled only on a machine and account where those actions are expected.
+
+## Project Showcase
+
+The repository includes an editable, silent 18-second HTML video that presents the local model loop, screen/OCR and voice surfaces, agent workflows, and plugin manager. The rendered MP4 is embedded below; the source composition and storyboard are available in [`videos/basic-jarvis-showcase/`](videos/basic-jarvis-showcase/).
+
+<video controls autoplay loop muted playsinline width="100%">
+  <source src="docs/assets/basic-jarvis-showcase.mp4" type="video/mp4">
+  <a href="docs/assets/basic-jarvis-showcase.mp4">Watch the BASIC-JARVIS showcase video</a>
+</video>
+
+[Download or watch the MP4](docs/assets/basic-jarvis-showcase.mp4) · [Edit the HTML composition](videos/basic-jarvis-showcase/index.html) · [Read the storyboard](videos/basic-jarvis-showcase/STORYBOARD.md)
 
 ### Key capabilities
 
@@ -263,6 +275,8 @@ BASIC-JARVIS/
 │   ├── main.js              Electron main process
 │   ├── preload.js           Context-isolated IPC bridge
 │   └── package.json         Frontend and Electron scripts
+├── docs/assets/             Stable documentation media, including the showcase MP4
+├── videos/basic-jarvis-showcase/  Editable HyperFrames composition and storyboard
 ├── scripts/                 Installation, startup, and API test helpers
 ├── shared/                  IPC schemas and shared TypeScript types
 ├── .github/                 CI, issue templates, and contribution metadata
@@ -302,6 +316,17 @@ python scripts/test_api.py
 ```
 
 Continuous integration runs Python compilation checks and the Electron production build on pushes and pull requests targeting `master`.
+
+To validate or re-render the editable showcase locally:
+
+```bash
+cd videos/basic-jarvis-showcase
+npm ci
+npm run check
+npm run render
+```
+
+The render script writes the stable MP4 to `docs/assets/basic-jarvis-showcase.mp4`.
 
 ## Deployment
 

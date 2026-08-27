@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>BASIC-JARVIS — Local-first desktop AI</title>
+    <script src="./node_modules/gsap/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0a0a0a;
+        --surface: #111111;
+        --surface-2: #1a1a1a;
+        --line: rgba(255, 255, 255, 0.13);
+        --text: #f1f5f4;
+        --muted: #a1a1aa;
+        --cyan: #22d3ee;
+        --cyan-soft: #67e8f9;
+        --green: #22c55e;
+        --warm: #f0b37e;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      .clip {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+      .scene-bg {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 76% 20%, rgba(34, 211, 238, 0.10), transparent 28%),
+          linear-gradient(135deg, #0a0a0a 0%, #101316 58%, #0a0a0a 100%);
+      }
+      .scene-bg::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.22;
+        background-image: linear-gradient(rgba(103, 232, 249, 0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(103, 232, 249, 0.12) 1px, transparent 1px);
+        background-size: 72px 72px;
+        mask-image: linear-gradient(to bottom, black, transparent 85%);
+      }
+      .ambient {
+        position: absolute;
+        border: 1px solid rgba(103, 232, 249, 0.24);
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .ambient.one { width: 460px; height: 460px; right: -130px; top: 70px; }
+      .ambient.two { width: 720px; height: 720px; left: -310px; bottom: -380px; border-color: rgba(34, 197, 94, 0.18); }
+      .ambient.three { width: 260px; height: 260px; right: 240px; bottom: -150px; border-color: rgba(240, 179, 126, 0.18); }
+      .eyebrow {
+        color: var(--cyan-soft);
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+      }
+      .kicker {
+        color: var(--muted);
+        font-size: 20px;
+        letter-spacing: 0.04em;
+      }
+      h1, h2, p { margin: 0; }
+      h1 {
+        font-size: 102px;
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+        font-weight: 800;
+      }
+      h1 span, h2 span { display: block; }
+      .chat-title h2, .perception-title h2, .automation-title h2, .closing-copy h2 { margin-top: 22px; }
+      h2 {
+        font-size: 64px;
+        line-height: 1.02;
+        letter-spacing: -0.045em;
+        font-weight: 760;
+      }
+      .subhead {
+        max-width: 760px;
+        color: #c8d0cf;
+        font-size: 28px;
+        line-height: 1.35;
+      }
+      .mono { font-family: monospace; }
+      .panel {
+        border: 1px solid var(--line);
+        background: linear-gradient(145deg, rgba(26, 26, 26, 0.94), rgba(13, 17, 19, 0.9));
+        box-shadow: 0 26px 80px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        border-radius: 22px;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #b7c3c1;
+        font-size: 16px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .status::before {
+        content: "";
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 16px rgba(34, 197, 94, 0.85);
+      }
+
+      /* Scene 1 */
+      .intro-copy { position: absolute; left: 150px; top: 176px; width: 850px; }
+      .intro-copy h1 { margin-top: 28px; }
+      .intro-copy .subhead { margin-top: 36px; }
+      .intro-icon {
+        position: absolute;
+        right: 220px;
+        top: 225px;
+        width: 350px;
+        height: 350px;
+        border-radius: 86px;
+        border: 1px solid rgba(103, 232, 249, 0.35);
+        background: rgba(17, 17, 17, 0.86);
+        display: grid;
+        place-items: center;
+        transform: rotate(8deg);
+        box-shadow: 0 0 90px rgba(34, 211, 238, 0.13);
+      }
+      .intro-icon img { width: 232px; height: 232px; object-fit: contain; transform: rotate(-8deg); filter: drop-shadow(0 0 30px rgba(34, 211, 238, 0.36)); }
+      .stack-line { position: absolute; left: 150px; bottom: 138px; display: flex; align-items: center; gap: 18px; }
+      .stack-line span { padding: 12px 16px; border: 1px solid var(--line); border-radius: 99px; background: rgba(17, 17, 17, 0.8); color: #dce6e4; font-size: 17px; }
+      .stack-line i { width: 36px; height: 1px; background: var(--cyan); opacity: 0.7; }
+      .intro-meta { position: absolute; right: 180px; bottom: 160px; text-align: right; }
+      .intro-meta .mono { display: block; margin-top: 12px; color: var(--muted); font-size: 17px; }
+
+      /* Scene 2 */
+      .chat-title { position: absolute; left: 150px; top: 126px; }
+      .chat-title .kicker { margin-top: 22px; }
+      .chat-panel { position: absolute; left: 150px; top: 358px; width: 1110px; height: 520px; padding: 34px 38px; }
+      .window-bar { display: flex; justify-content: space-between; align-items: center; padding-bottom: 25px; border-bottom: 1px solid var(--line); }
+      .window-name { display: flex; align-items: center; gap: 13px; font-size: 17px; color: #dce6e4; }
+      .window-name::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 15px var(--cyan); }
+      .model-pill { padding: 9px 14px; border: 1px solid rgba(34, 211, 238, 0.3); border-radius: 99px; color: var(--cyan-soft); font-size: 15px; }
+      .message { margin-top: 42px; max-width: 760px; padding: 20px 24px; border-radius: 15px; font-size: 22px; line-height: 1.4; }
+      .message.user { margin-left: auto; color: #dffaf6; background: rgba(34, 211, 238, 0.11); border: 1px solid rgba(34, 211, 238, 0.24); }
+      .message.ai { margin-top: 22px; color: #c9d5d3; background: rgba(255, 255, 255, 0.04); border-left: 2px solid var(--cyan); }
+      .streaming { display: flex; align-items: center; gap: 9px; margin-top: 22px; color: var(--muted); font-size: 16px; }
+      .streaming b { width: 7px; height: 7px; border-radius: 50%; background: var(--cyan); }
+      .chat-side { position: absolute; right: 160px; top: 370px; width: 330px; }
+      .side-label { color: var(--muted); font-size: 14px; letter-spacing: 0.17em; text-transform: uppercase; }
+      .side-value { margin-top: 13px; color: var(--text); font-size: 25px; font-weight: 650; }
+      .side-rule { height: 1px; background: rgba(255,255,255,0.14); margin: 25px 0; }
+      .side-copy { color: var(--muted); font-size: 17px; line-height: 1.45; }
+      .side-signal { position: relative; height: 68px; margin-top: 28px; border-bottom: 1px solid rgba(103,232,249,0.35); }
+      .side-signal::after { content: ""; position: absolute; left: 0; right: 0; bottom: 13px; height: 34px; background: linear-gradient(135deg, transparent 0 12%, var(--cyan) 12% 13%, transparent 13% 28%, var(--cyan) 28% 29%, transparent 29% 43%, var(--cyan) 43% 44%, transparent 44% 62%, var(--cyan) 62% 63%, transparent 63%); opacity: 0.8; }
+
+      /* Scene 3 */
+      .perception-title { position: absolute; left: 150px; top: 126px; }
+      .perception-title .kicker { margin-top: 22px; }
+      .perception-grid { position: absolute; left: 150px; right: 150px; top: 350px; display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 26px; }
+      .scan-panel { height: 470px; padding: 30px; position: relative; }
+      .scan-panel h3, .voice-panel h3 { margin: 0; font-size: 22px; font-weight: 650; }
+      .scan-panel .small, .voice-panel .small { color: var(--muted); font-size: 16px; margin-top: 8px; }
+      .screen-frame { position: absolute; left: 30px; right: 30px; top: 122px; height: 270px; border: 1px solid rgba(103,232,249,0.29); border-radius: 14px; background: linear-gradient(145deg, rgba(34, 211, 238, 0.08), rgba(255,255,255,0.02)); overflow: hidden; }
+      .screen-frame::before { content: "LOCAL DESKTOP / MONITOR 0"; position: absolute; left: 19px; top: 17px; color: var(--cyan-soft); font: 13px monospace; letter-spacing: 0.11em; }
+      .screen-text span { display: block; }
+      .screen-text { position: absolute; left: 20px; top: 72px; color: #d6e0de; font: 18px/1.7 monospace; }
+      .scan-line { position: absolute; left: 0; right: 0; top: 33px; height: 2px; background: var(--cyan); box-shadow: 0 0 22px var(--cyan); opacity: 0.8; }
+      .ocr-tag { position: absolute; right: 22px; bottom: 19px; padding: 8px 12px; border-radius: 7px; background: rgba(34,197,94,0.15); color: #9af2b5; font: 13px monospace; }
+      .voice-panel { height: 470px; padding: 30px; }
+      .voice-readout { margin-top: 58px; color: var(--cyan-soft); font: 15px monospace; }
+      .wave { display: flex; align-items: center; justify-content: space-between; height: 118px; margin-top: 24px; padding: 0 16px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      .wave i { width: 5px; border-radius: 4px; background: var(--cyan); opacity: 0.8; }
+      .voice-flow { display: flex; gap: 11px; margin-top: 28px; flex-wrap: wrap; }
+      .voice-flow span { padding: 10px 12px; border: 1px solid rgba(255,255,255,0.13); border-radius: 8px; color: #ccd7d5; font-size: 15px; }
+      .voice-flow span.active { border-color: rgba(34,197,94,0.48); color: #a7f3b9; }
+
+      /* Scene 4 */
+      .automation-title { position: absolute; left: 150px; top: 126px; }
+      .automation-title .kicker { margin-top: 22px; }
+      .workflow-panel { position: absolute; left: 150px; top: 370px; width: 1000px; height: 430px; padding: 40px; }
+      .workflow-panel .panel-label { color: var(--muted); font-size: 15px; letter-spacing: 0.16em; text-transform: uppercase; }
+      .nodes { display: flex; align-items: center; margin-top: 64px; }
+      .node { width: 190px; min-height: 130px; padding: 19px; border: 1px solid rgba(103,232,249,0.33); border-radius: 15px; background: rgba(34,211,238,0.06); }
+      .node small { display: block; color: var(--cyan-soft); font: 13px monospace; }
+      .node strong { display: block; margin-top: 15px; color: #e5efed; font-size: 19px; }
+      .connector { width: 52px; height: 1px; background: var(--cyan); opacity: 0.65; }
+      .plugin-stack { position: absolute; right: 150px; top: 370px; width: 440px; }
+      .plugin-stack .side-label { margin-bottom: 16px; display: block; }
+      .plugin-card { display: flex; align-items: center; justify-content: space-between; padding: 22px 24px; margin-bottom: 14px; border-radius: 15px; border: 1px solid var(--line); background: rgba(17,17,17,0.78); }
+      .plugin-card strong { font-size: 20px; font-weight: 620; }
+      .plugin-card small { display: block; margin-top: 7px; color: var(--muted); font-size: 15px; }
+      .plugin-check { width: 27px; height: 27px; border-radius: 50%; display: grid; place-items: center; color: #08110b; background: var(--green); font-weight: 800; }
+
+      /* Scene 5 */
+      .closing-copy { position: absolute; left: 150px; top: 180px; width: 980px; }
+      .closing-copy h2 { margin-top: 28px; font-size: 76px; }
+      .closing-copy .subhead { margin-top: 32px; max-width: 720px; }
+      .repo-link { display: inline-flex; align-items: center; gap: 15px; margin-top: 46px; padding: 17px 21px; border: 1px solid rgba(34,211,238,0.38); border-radius: 12px; color: var(--cyan-soft); font: 18px monospace; background: rgba(34,211,238,0.07); }
+      .closing-mark { position: absolute; right: 200px; top: 250px; width: 400px; height: 400px; }
+      .closing-mark::before, .closing-mark::after { content: ""; position: absolute; inset: 0; border: 1px solid rgba(103,232,249,0.28); border-radius: 50%; }
+      .closing-mark::after { inset: 55px; border-color: rgba(34,197,94,0.23); }
+      .closing-mark .monogram { position: absolute; width: 190px; height: 190px; inset: 105px; display: grid; place-items: center; color: var(--cyan-soft); font-size: 78px; font-weight: 800; letter-spacing: -0.08em; filter: drop-shadow(0 0 30px rgba(34,211,238,0.42)); }
+      .closing-footer { position: absolute; left: 150px; right: 150px; bottom: 102px; display: flex; justify-content: space-between; align-items: center; padding-top: 23px; border-top: 1px solid var(--line); color: var(--muted); font-size: 16px; }
+
+      .reveal { opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="basic-jarvis-showcase" data-start="0" data-width="1920" data-height="1080" data-duration="18">
+      <section id="scene-intro" class="clip scene" data-start="0" data-duration="3.2" data-track-index="0">
+        <div class="scene-bg"></div><div class="ambient one" data-layout-ignore></div><div class="ambient two" data-layout-ignore></div>
+        <div class="intro-copy reveal intro-reveal"><div class="eyebrow">Local-first desktop intelligence</div><h1><span>BASIC-</span><span>JARVIS</span></h1><p class="subhead">An open desktop assistant that keeps the model, the interface, and the workflow close to your machine.</p></div>
+        <div class="intro-icon reveal intro-reveal"><img id="intro-icon-image" src="capture/assets/basic-jarvis-icon.png" alt="BASIC-JARVIS application icon" /></div>
+        <div class="stack-line reveal intro-reveal"><span>Electron</span><i></i><span>FastAPI</span><i></i><span>Ollama</span></div>
+        <div class="intro-meta reveal intro-reveal"><span class="status">Local runtime ready</span><span class="mono">127.0.0.1 : 8000</span></div>
+      </section>
+
+      <section id="scene-chat" class="clip scene" data-start="3.2" data-duration="3.8" data-track-index="1">
+        <div class="scene-bg"></div><div class="ambient three" data-layout-ignore></div><div class="ambient one" data-layout-ignore></div>
+        <div class="chat-title reveal chat-reveal"><div class="eyebrow">01 / Local model loop</div><h2>Ask. Stream. Keep control.</h2><p class="kicker">Chat requests stay inside the Ollama-powered backend.</p></div>
+        <div class="chat-panel panel reveal chat-reveal"><div class="window-bar"><div class="window-name">JARVIS / conversation</div><div class="model-pill mono">llama3.1:8b · connected</div></div><div id="chat-user" class="message user reveal chat-reveal">Summarize this workflow in one clear sentence.</div><div id="chat-ai" class="message ai reveal chat-reveal">BASIC-JARVIS connects a desktop interface to local models, tools, and workflows.</div><div class="streaming reveal chat-reveal"><b></b><b></b><b></b><span class="mono">streaming response / 042 tokens</span></div></div>
+        <div class="chat-side reveal chat-reveal"><span class="side-label">Transport</span><div class="side-value">HTTP · SSE · WebSocket</div><div class="side-rule"></div><p class="side-copy">One backend exposes synchronous chat, streaming responses, and real-time connections.</p><div class="side-signal"></div></div>
+      </section>
+
+      <section id="scene-perception" class="clip scene" data-start="7" data-duration="3.8" data-track-index="2">
+        <div class="scene-bg"></div><div class="ambient two" data-layout-ignore></div><div class="ambient three" data-layout-ignore></div>
+        <div class="perception-title reveal perception-reveal"><div class="eyebrow">02 / Perception layer</div><h2><span>See the screen.</span><span>Hear the signal.</span></h2><p class="kicker">OCR and voice routes turn the desktop into context.</p></div>
+        <div class="perception-grid"><div class="scan-panel panel reveal perception-reveal"><h3>Screen capture + OCR</h3><p class="small">Monitor 0 · preprocessing enabled</p><div class="screen-frame"><div class="scan-line"></div><div class="screen-text"><span>meeting_notes.txt</span><span>next action: ship the build</span><span>owner: local runtime</span></div><div class="ocr-tag">TESSERACT / TEXT FOUND</div></div></div><div class="voice-panel panel reveal perception-reveal"><h3>Voice pipeline</h3><p class="small">Transcribe → respond → speak</p><div class="voice-readout">WHISPER / LISTENING</div><div id="voice-wave" class="wave reveal perception-reveal"><i style="height:28px"></i><i style="height:52px"></i><i style="height:88px"></i><i style="height:42px"></i><i style="height:102px"></i><i style="height:61px"></i><i style="height:34px"></i><i style="height:78px"></i><i style="height:49px"></i><i style="height:92px"></i><i style="height:30px"></i><i style="height:64px"></i></div><div class="voice-flow"><span class="active">Whisper STT</span><span>Ollama LLM</span><span class="active">Piper TTS</span></div></div></div>
+      </section>
+
+      <section id="scene-automation" class="clip scene" data-start="10.8" data-duration="3.8" data-track-index="3">
+        <div class="scene-bg"></div><div class="ambient one" data-layout-ignore></div><div class="ambient two" data-layout-ignore></div>
+        <div class="automation-title reveal automation-reveal"><div class="eyebrow">03 / Action layer</div><h2><span>Turn intent into</span><span>a workflow.</span></h2><p class="kicker">Agents and plugins make the surface extensible.</p></div>
+        <div class="workflow-panel panel reveal automation-reveal"><div class="panel-label mono">agent action graph / running</div><div class="nodes"><div class="node reveal automation-reveal"><small>01 · INPUT</small><strong>llm_query</strong></div><div class="connector"></div><div class="node reveal automation-reveal"><small>02 · CONTEXT</small><strong>read_screen</strong></div><div class="connector"></div><div class="node reveal automation-reveal"><small>03 · ACTION</small><strong>open_app</strong></div><div class="connector"></div><div class="node reveal automation-reveal"><small>04 · RESULT</small><strong>save_file</strong></div></div></div>
+        <div class="plugin-stack reveal automation-reveal"><span class="side-label">Python plugin manager</span><div class="plugin-card"><div><strong>system_stats</strong><small>monitor local resources</small></div><div class="plugin-check">✓</div></div><div class="plugin-card"><div><strong>browser_automation</strong><small>Playwright-powered tools</small></div><div class="plugin-check">✓</div></div><div class="plugin-card"><div><strong>scheduled_tasks</strong><small>persistent task runner</small></div><div class="plugin-check">✓</div></div></div>
+      </section>
+
+      <section id="scene-closing" class="clip scene" data-start="14.6" data-duration="3.4" data-track-index="4">
+        <div class="scene-bg"></div><div class="ambient three" data-layout-ignore></div><div class="ambient one" data-layout-ignore></div>
+        <div class="closing-copy reveal closing-reveal"><div class="eyebrow">Built to inspect. Ready to extend.</div><h2><span>Your desktop.</span><span>Your runtime.</span></h2><p class="subhead">Read the code, run the stack locally, and shape the assistant around your own workflows.</p><div class="repo-link reveal closing-reveal"><span>↗</span> github.com/vincenzo-afk/BASIC-JARVIS</div></div>
+        <div class="closing-mark reveal closing-reveal"><div id="closing-monogram" class="monogram" aria-label="BASIC-JARVIS monogram">BJ</div></div>
+        <div class="closing-footer reveal closing-reveal"><span class="mono">ELECTRON + FASTAPI + OLLAMA</span><span class="status">Local by design</span></div>
+      </section>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo('.intro-reveal', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.72, stagger: 0.12, ease: 'power3.out' }, 0.22)
+        .to('#scene-intro .ambient.one', { rotation: 14, scale: 1.08, duration: 2.4, repeat: 1, yoyo: true, ease: 'sine.inOut' }, 0)
+        .to('#scene-intro .ambient.two', { rotation: -10, scale: 1.04, duration: 2.8, repeat: 1, yoyo: true, ease: 'sine.inOut' }, 0)
+        .fromTo('.chat-reveal', { opacity: 0, x: 34 }, { opacity: 1, x: 0, duration: 0.6, stagger: 0.09, ease: 'power3.out' }, 3.42)
+        .to('#scene-chat .ambient.one', { rotation: -12, scale: 1.1, duration: 2.4, repeat: 1, yoyo: true, ease: 'sine.inOut' }, 3.2)
+        .to('#scene-chat .side-signal', { opacity: 0.4, scaleX: 0.86, transformOrigin: 'left center', duration: 1.1, repeat: 2, yoyo: true, ease: 'sine.inOut' }, 3.5)
+        .fromTo('.perception-reveal', { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.58, stagger: 0.1, ease: 'power3.out' }, 7.24)
+        .to('#scene-perception .ambient.two', { rotation: 12, scale: 1.06, duration: 2.5, repeat: 1, yoyo: true, ease: 'sine.inOut' }, 7)
+        .to('#scene-perception .scan-line', { y: 220, duration: 2.2, ease: 'sine.inOut' }, 7.35)
+        .to('#voice-wave i', { scaleY: 0.6, transformOrigin: 'center', duration: 0.45, stagger: 0.08, repeat: 3, yoyo: true, ease: 'sine.inOut' }, 7.45)
+        .fromTo('.automation-reveal', { opacity: 0, x: -28 }, { opacity: 1, x: 0, duration: 0.6, stagger: 0.08, ease: 'power3.out' }, 11.04)
+        .to('#scene-automation .ambient.one', { rotation: -15, scale: 1.08, duration: 2.3, repeat: 1, yoyo: true, ease: 'sine.inOut' }, 10.8)
+        .to('#scene-automation .plugin-check', { scale: 1.14, duration: 0.45, stagger: 0.18, repeat: 2, yoyo: true, ease: 'sine.inOut' }, 11.45)
+        .fromTo('.closing-reveal', { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.72, stagger: 0.11, ease: 'power3.out' }, 14.82)
+        .to('#scene-closing .ambient.three', { rotation: 16, scale: 1.1, duration: 2.1, repeat: 1, yoyo: true, ease: 'sine.inOut' }, 14.6)
+        .to('#scene-closing .closing-mark', { rotation: 7, scale: 1.04, duration: 1.6, repeat: 1, yoyo: true, ease: 'sine.inOut' }, 15.1);
+      window.__timelines['basic-jarvis-showcase'] = tl;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+# Visual review notes
+
+The HyperFrames snapshots at 1.0s and 5.0s were inspected. The opening frame clearly presents BASIC-JARVIS with the existing repository icon, dark renderer-faithful palette, cyan signal accents, visible Electron/FastAPI/Ollama stack, and local runtime address. The chat frame clearly presents the model badge, user prompt, response panel, streaming indicator, and HTTP/SSE/WebSocket transport label. No visible clipping, unreadable overlap, missing image, or broken layout was observed in these reviewed frames.
+The perception frame at 9.0s clearly separates screen/OCR and voice pipeline panels; the scan line, extracted text, waveform, and Whisper/Ollama/Piper labels remain readable. The automation frame at 13.0s clearly separates the agent action graph from the Python plugin manager; the four workflow nodes and three plugin cards remain in frame with a clear hierarchy. No visible clipping or unreadable overlap was observed.
+The closing frame at 17.0s keeps the repository URL, local-stack footer, and final “BJ” monogram cleanly separated. The visual review is complete for the five generated snapshots; the composition is ready for local render.

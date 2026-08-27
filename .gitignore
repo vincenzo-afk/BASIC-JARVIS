@@ -31,3 +31,8 @@ backend/logs/
 *.mp3
 *.m4a
 *.webm
+
+# HyperFrames local verification output
+videos/*/snapshots/
+videos/*/renders/
+videos/*/.hyperframes/

@@ -128,6 +128,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Added an editable, silent 18-second HyperFrames showcase at `videos/basic-jarvis-showcase/` and embedded its rendered MP4 in the root README.
 - Replaced the stale root README with repository-specific installation, configuration, usage, API, testing, deployment, security, and contribution guidance.
 - Fixed Electron development startup so `npm run dev` loads the React development server instead of the production bundle.
 - Added a non-secret backend environment template, CI checks, issue templates, pull-request guidance, and security documentation.

@@ -1,0 +1,10 @@
+{
+  "duration": 18,
+  "assertions": [
+    {"kind": "appearsBy", "selector": ".intro-copy", "bySec": 0.9},
+    {"kind": "appearsBy", "selector": "#scene-chat .chat-panel", "bySec": 4.2},
+    {"kind": "appearsBy", "selector": "#scene-closing .repo-link", "bySec": 15.9},
+    {"kind": "before", "a": "#scene-intro .intro-copy", "b": "#scene-intro .intro-meta"},
+    {"kind": "staysInFrame", "selector": "#scene-chat .chat-panel"}
+  ]
+}

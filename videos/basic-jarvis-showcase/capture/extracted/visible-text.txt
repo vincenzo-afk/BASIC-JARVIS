@@ -1,0 +1,12 @@
+BASIC-JARVIS
+Local-first desktop AI assistant built with Electron, FastAPI, and Ollama.
+
+Verified capabilities:
+- Ollama-powered local chat with streaming and WebSocket routes.
+- Electron + React desktop UI with tray integration and global shortcuts.
+- Screen capture and Tesseract OCR routes.
+- Whisper speech-to-text and Piper text-to-speech routes.
+- Agent workflow execution and a Python plugin lifecycle manager.
+- System-control routes guarded by ENABLE_SYSTEM_CONTROL.
+
+Repository: https://github.com/vincenzo-afk/BASIC-JARVIS
